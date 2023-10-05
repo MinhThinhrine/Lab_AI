@@ -1,7 +1,5 @@
 package th1;
 
-import Environment.LocationState;
-
 public class Environment {
 	public static final Action MOVE_LEFT = new DynamicAction("LEFT");
 	public static final Action MOVE_RIGHT = new DynamicAction("RIGHT");
