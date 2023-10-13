@@ -54,7 +54,6 @@ public class Node implements Comparable<Node> {
 	public void addEdge(Node that, double cost) {
 		Edge edge = new Edge(this, that, cost);
 		this.children.add(edge);
-		that.setParent(this);
 	}
 
 	// an edge is generated using this node and "that" with the given cost

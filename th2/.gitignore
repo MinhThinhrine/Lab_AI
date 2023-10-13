@@ -5,3 +5,6 @@
 /Test.class
 /BreadthFirstSearchAlgo.class
 /DepthFirstSearchAlgo.class
+/DepthLimitedSearchAlgo.class
+/UniformCostSearchAlgo.class
+/UniformCostSearchAlgo$1.class

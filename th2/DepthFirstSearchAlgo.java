@@ -1,76 +1,41 @@
 package th2;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Stack;
-import java.util.TreeSet;
 
-public class DepthFirstSearchAlgo implements ISearchAlgo {
+public class DepthFirstSearchAlgo implements ISearchAlgo{
 
 	@Override
-	public Node execute(Node startNode, String targetNodeName) {
-	    Stack<Node> stack = new Stack<>();
-	    Set<Node> visited = new HashSet<>();
-
-	    stack.push(startNode);
-
-	    while (!stack.isEmpty()) {
-	        Node current = stack.pop();
-	        if (current.getLabel().equals(targetNodeName)) {
-	            return current;
-	        }
-
-	        visited.add(current);
-
-	        // Sắp xếp các đỉnh kề theo thứ tự từ điển
-	        Set<Edge> edges = new HashSet<>(current.getChildren());
-	        Set<Edge> sortedEdges = sortEdges(edges);
-
-	        for (Edge edge : sortedEdges) {
-	            Node adjacent = edge.getEnd();
-	            if (!visited.contains(adjacent)) {
-	                stack.push(adjacent);
-	            }
-	        }
-	    }
-
-	    return null;
+	public Node execute(Node root, String goal) {
+		// TODO Auto-generated method stub
+		if (root.getLabel().equals(goal)) return root;
+		Stack<Node> frontier = new Stack<Node>();
+		List<Node> explored = new ArrayList<>();
+		frontier.add(root);
+		while (!frontier.isEmpty()) {
+			Node currentNode = frontier.pop();
+			if(currentNode.getLabel().equals(goal)) return currentNode;
+			explored.add(currentNode);
+			List<Node> children = currentNode.getChildrenNodes();
+			for (int i = children.size()-1; i >= 0; i--) {
+				if (!frontier.contains(children.get(i)) && !explored.contains(children.get(i))) {
+					children.get(i).setParent(currentNode);
+					frontier.push(children.get(i));
+				}
+			}
+		}
+		return null;
 	}
 
-	private Set<Edge> sortEdges(Set<Edge> edges) {
-	    TreeSet<Edge> sortedEdges = new TreeSet<>((a, b) -> a.getEnd().getLabel().compareTo(b.getEnd().getLabel()));
-	    sortedEdges.addAll(edges);
-	    return sortedEdges;
+	@Override
+	public Node execute(Node root, String start, String goal) {
+		// TODO Auto-generated method stub
+		if (root.getLabel().equals(goal)) return root;
+		if (start.equals(goal)) return new Node(goal);
+		Node strartNode = execute(root, start);
+		strartNode.setParent(null);
+		return execute(strartNode, goal);
 	}
 
-
-    public Node execute(Node root, String start, String goal) {
-        Node startNode = findNode(root, start);
-
-        if (startNode == null) {
-            return null; // Start node not found
-        }
-
-        return execute(startNode, goal);
-    }
-
-    private Node findNode(Node root, String data) {
-        if (root == null) {
-            return null;
-        }
-
-        if (root.getLabel().equals(data)) {
-            return root;
-        }
-
-        for (Edge edge : root.getChildren()) {
-            Node adjacent = edge.getEnd();
-            Node result = findNode(adjacent, data);
-            if (result != null) {
-                return result;
-            }
-        }
-
-        return null;
-    }
 }

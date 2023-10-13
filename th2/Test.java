@@ -1,48 +1,73 @@
 package th2;
 
-public class Test {
-	public static void main(String[] args) {
-		
-	Node nodeS = new Node("S"); 
+public class Test {public static void main(String[] args) {
+	// TODO Auto-generated method stub
+	Node nodeS = new Node("S");
 	Node nodeA = new Node("A"); 
-	Node nodeB = new Node("B"); 
-	Node nodeC = new Node("C");
-	Node nodeD = new Node("D"); 
+	Node nodeB = new Node("B");
+	Node nodeC = new Node("C"); 
+	Node nodeD = new Node("D");
 	Node nodeE = new Node("E"); 
-	Node nodeF = new Node("F"); 
+	Node nodeF = new Node("F");
 	Node nodeG = new Node("G"); 
-	Node nodeH = new Node("H"); 
-	
+	Node nodeH = new Node("H");
 	nodeS.addEdge(nodeA, 5); 
-	nodeS.addEdge(nodeB, 2); 
+	nodeS.addEdge(nodeB, 2);
 	nodeS.addEdge(nodeC, 4); 
+	nodeA.addEdge(nodeD, 9);
 	nodeA.addEdge(nodeE, 4); 
-	nodeA.addEdge(nodeD, 9); 
-	nodeB.addEdge(nodeG, 6); 
+	nodeB.addEdge(nodeG, 6);
 	nodeC.addEdge(nodeF, 2); 
-	nodeD.addEdge(nodeH, 7); 
+	nodeD.addEdge(nodeH, 7);
 	nodeE.addEdge(nodeG, 6); 
-	nodeF.addEdge(nodeG, 1); 
-//	nodeS.setParent(null); // Start node has no parent
-//	nodeA.setParent(nodeS); // Parent of nodeA is nodeS
-//	nodeB.setParent(nodeS); // Parent of nodeB is nodeS
-//	nodeC.setParent(nodeS); // Parent of nodeC is nodeS
-//	nodeD.setParent(nodeA); // Parent of nodeD is nodeA
-//	nodeE.setParent(nodeA); // Parent of nodeE is nodeA
-//	nodeF.setParent(nodeC); // Parent of nodeF is nodeC
-//	nodeG.setParent(nodeE); // Parent of nodeG is nodeE
-//	nodeG.setParent(nodeB); // Parent of nodeG is nodeB
-//	nodeF.setParent(nodeC); //parent of nodeF is nodeC
-//	nodeG.setParent(nodeF);// Parent of nodeG is nodeF
-//	nodeH.setParent(nodeD); // Parent of nodeH is nodeD
-	ISearchAlgo algo1 = new BreadthFirstSearchAlgo(); 
-	ISearchAlgo algo2 = new DepthFirstSearchAlgo();
-	NodeUtils nd = new NodeUtils();
-	Node result1 = algo1.execute(nodeS, "G");
-	System.out.println(nd.printPath(result1	));
+	nodeF.addEdge(nodeG, 1);
 
-//	Node result2 = algo2.execute(nodeS, "G");
-//	System.out.println(nd.printPath(result2	));
-
-	}
-}
+	//Breadth First Search Test
+	System.out.println("*Breadth First Search Test:");
+	System.out.println("Breadth First Search 1 Test:");
+	ISearchAlgo algoBFS = new BreadthFirstSearchAlgo();
+	Node resultBFS1 = algoBFS.execute(nodeS, "G");
+	System.out.println(NodeUtils.printPath(resultBFS1));
+	
+	System.out.println("Breadth First Search 2 Test:");
+	Node resultBFS2 = algoBFS.execute(nodeS, "S", "G");
+	System.out.println(NodeUtils.printPath(resultBFS2));
+	
+	//Depth First Search Test
+	System.out.println("\n*Depth First Search Test:");
+	System.out.println("Depth First Search 1 Test:");
+	ISearchAlgo algoDFS = new DepthFirstSearchAlgo();
+	Node resultDFS1 = algoDFS.execute(nodeS, "G");
+	System.out.println(NodeUtils.printPath(resultDFS1));
+	
+	System.out.println("Depth First Search 2 Test:");
+	Node resultDFS2 = algoDFS.execute(nodeS, "A", "G");
+	System.out.println(NodeUtils.printPath(resultDFS2));
+	
+	//Uniform Cost Search Test
+	System.out.println("\n*Uniform Cost Search Test:");
+	System.out.println("Uniform Cost Search 1 Test:");
+	ISearchAlgo algoUCS = new UniformCostSearchAlgo();
+	Node resultUCS1 = algoUCS.execute(nodeS, "G");
+	System.out.println(resultUCS1);
+	System.out.println(NodeUtils.printPath(resultUCS1));
+	System.out.println(resultUCS1.getPathCost());
+	
+	System.out.println("Uniform Cost Search 2 Test:");
+	Node resultUCS2 = algoUCS.execute(nodeS, "C", "G");
+	System.out.println(resultUCS2);
+	System.out.println(NodeUtils.printPath(resultUCS2));
+	
+	//Depth Limited Search
+	int limitedDepth1 = 2;
+	System.out.println("\nDepth Limited Search Test with limited depth = " + limitedDepth1 + ":");
+	DepthLimitedSearchAlgo algoDLS = new DepthLimitedSearchAlgo();
+	Node resultDLS1 = algoDLS.execute(nodeS, "G", limitedDepth1);
+	System.out.println(NodeUtils.printPath(resultDLS1));
+	
+	int limitedDepth2 = 4;
+	System.out.println("Depth Limited Search Test with limited depth = " + limitedDepth2 + ":");
+	DepthLimitedSearchAlgo algoDLS2 = new DepthLimitedSearchAlgo();
+	Node resultDLS2 = algoDLS2.execute(nodeS, "G", limitedDepth2);
+	System.out.println(NodeUtils.printPath(resultDLS2));
+}}
