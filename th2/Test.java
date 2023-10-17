@@ -51,7 +51,6 @@ public class Test {public static void main(String[] args) {
 	Node resultUCS1 = algoUCS.execute(nodeS, "G");
 	System.out.println(resultUCS1);
 	System.out.println(NodeUtils.printPath(resultUCS1));
-	System.out.println(resultUCS1.getPathCost());
 	
 	System.out.println("Uniform Cost Search 2 Test:");
 	Node resultUCS2 = algoUCS.execute(nodeS, "C", "G");
