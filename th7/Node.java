@@ -113,7 +113,7 @@ public class Node implements Comparable<Node> {
 		}
 		return result;
 	}
-	
+
 	public Node getBestCandidate() {
 		List<Node> re = this.generateAllCandidates();
 		Collections.sort(re);
@@ -151,5 +151,21 @@ public class Node implements Comparable<Node> {
 	@Override
 	public int compareTo(Node o) {
 		return (this.getH() - o.getH());
+	}
+	// Các phương thức và thuộc tính khác của lớp Node
+
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		for (int i = 0; i < N; i++) {
+			sb.append("(").append(state[i].getRow()).append(", ").append(state[i].getColumn()).append(")");
+			if (i < N - 1) {
+				sb.append(", ");
+			}
+		}
+		sb.append("]");
+		return sb.toString();
+
 	}
 }

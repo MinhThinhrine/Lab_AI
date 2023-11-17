@@ -1,107 +1,122 @@
 package th7;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class GA_NQueenAlgo {
-    private static final int POPULATION_SIZE = 100;
-    private static final double MUTATION_RATE = 0.05;
-    private static final int MAX_GENERATIONS = 1000;
+	public static final int POP_SIZE = 100; // Kích thước quần thể
+	public static final double MUTATION_RATE = 0.03; // Tỷ lệ đột biến
+	public static final int MAX_ITERATIONS = 1000; // Số lần lặp tối đa
+	List<Node> population = new ArrayList<Node>();
+	Random rd = new Random();
 
-    private int boardSize;
+	// Khởi tạo quần thể bằng cách tạo ra các cá thể ban đầu
+	public void initPopulation() {
+		for (int i = 0; i < POP_SIZE; i++) {
+			Node ni = new Node();
+			ni.generateBoard();
+			population.add(ni);
+		}
+	}
 
-    public GA_NQueenAlgo(int boardSize) {
-        this.boardSize = boardSize;
-    }
+	public Node execute() {
+		// Khởi tạo quần thể ban đầu
+		initPopulation();
 
-    public List<Chromosome> initializePopulation() {
-        List<Chromosome> population = new ArrayList<>();
+		int iterations = 0;
+		Node bestSolution = null;
 
-        for (int i = 0; i < POPULATION_SIZE; i++) {
-            Chromosome chromosome = new Chromosome(boardSize);
-            chromosome.generateRandom();
-            population.add(chromosome);
-        }
+		while (iterations < MAX_ITERATIONS) {
+			List<Node> newPopulation = new ArrayList<Node>();
 
-        return population;
-    }
+			// Lặp qua từng cá thể trong quần thể hiện tại
+			for (int i = 0; i < POP_SIZE; i++) {
+				Node parent1 = getParentByTournamentSelection();
+				Node parent2 = getParentByTournamentSelection();
 
-    public Chromosome selection(List<Chromosome> population) {
-        Random random = new Random();
-        int index1 = random.nextInt(population.size());
-        int index2 = random.nextInt(population.size());
+				// Tạo ra con cái từ 2 cha mẹ
+				Node child = reproduce(parent1, parent2);
 
-        Chromosome chromosome1 = population.get(index1);
-        Chromosome chromosome2 = population.get(index2);
+				// Đột biến con cái
+				mutate(child);
 
-        return chromosome1.getFitness() < chromosome2.getFitness() ? chromosome1 : chromosome2;
-    }
+				newPopulation.add(child);
+			}
 
-    public Chromosome crossover(Chromosome parent1, Chromosome parent2) {
-        Chromosome child = new Chromosome(boardSize);
-        Random random = new Random();
+			// Cập nhật quần thể mới
+			population = newPopulation;
 
-        int crossoverPoint = random.nextInt(boardSize);
+			// Tìm kiếm cá thể tốt nhất trong quần thể
+			Node currentBest = findBestSolution();
+			if (bestSolution == null || currentBest.getH() < bestSolution.getH()) {
+				bestSolution = currentBest;
+			}
 
-        for (int i = 0; i < crossoverPoint; i++) {
-            parent1.setGene(i,i);
-        }
+			iterations++;
+		}
 
-        for (int i = crossoverPoint; i < boardSize; i++) {
-            child.setGene(i, i);;
-        }
+		return bestSolution;
+	}
 
-        return child;
-    }
+	// Đột biến một cá thể bằng cách chọn một quân hậu ngẫu nhiên và di chuyển nó
+	// đến một hàng ngẫu nhiên
+	public void mutate(Node node) {
+		for (int i = 0; i < Node.N; i++) {
+			if (rd.nextDouble() < MUTATION_RATE) {
+				node.getState()[i].setRow(rd.nextInt(Node.N));
+			}
+		}
+	}
 
-    public void mutate(Chromosome chromosome) {
-        Random random = new Random();
+	// Tạo ra con cái từ hai cha mẹ bằng cách kết hợp các quân hậu từ cả hai cha mẹ
+	public Node reproduce(Node x, Node y) {
+		Node child = new Node();
 
-        for (int i = 0; i < boardSize; i++) {
-            if (random.nextDouble() < MUTATION_RATE) {
-                int gene = random.nextInt(boardSize);
-                chromosome.setGene(i, gene);
-            }
-        }
-    }
+		for (int i = 0; i < Node.N; i++) {
+			if (rd.nextBoolean()) {
+				child.getState()[i].setRow(x.getState()[i].getRow());
+			} else {
+				child.getState()[i].setRow(y.getState()[i].getRow());
+			}
+		}
 
-    public Chromosome geneticAlgorithm() {
-        List<Chromosome> population = initializePopulation();
-        int generation = 0;
+		return child;
+	}
 
-        while (generation < MAX_GENERATIONS) {
-            List<Chromosome> newPopulation = new ArrayList<>();
+	// Lựa chọn cha mẹ thông qua giải thuật Tournament Selection
+	public Node getParentByTournamentSelection() {
+		int tournamentSize = 5;
+		List<Node> tournament = new ArrayList<Node>();
 
-            for (int i = 0; i < POPULATION_SIZE; i++) {
-                Chromosome parent1 = selection(population);
-                Chromosome parent2 = selection(population);
+		for (int i = 0; i < tournamentSize; i++) {
+			int randomIndex = rd.nextInt(POP_SIZE);
+			tournament.add(population.get(randomIndex));
+		}
 
-                Chromosome child = crossover(parent1, parent2);
+		return findBestSolution(tournament);
+	}
 
-                mutate(child);
+	// Lựa chọn cha mẹ ngẫu nhiên từ quần thể
+	public Node getParentByRandomSelection() {
+		int randomIndex = rd.nextInt(POP_SIZE);
+		return population.get(randomIndex);
+	}
 
-                newPopulation.add(child);
-            }
+	// Tìm kiếm cá thể tốt nhất trong một danh sách các cá thể
+	private Node findBestSolution(List<Node> nodes) {
+		Node best = nodes.get(0);
+		for (int i = 1; i < nodes.size(); i++) {
+			Node current = nodes.get(i);
+			if (current.getH() < best.getH()) {
+				best = current;
+			}
+		}
+		return best;
+	}
 
-            population = newPopulation;
-            generation++;
-        }
-
-        Chromosome bestChromosome = population.get(0);
-
-        for (Chromosome chromosome : population) {
-            if (chromosome.getFitness() < bestChromosome.getFitness()) {
-                bestChromosome = chromosome;
-            }
-        }
-
-        return bestChromosome;
-    }
-
-    public static void main(String[] args) {
-        int boardSize = 8;
-        GA_NQueenAlgo ga = new GA_NQueenAlgo(boardSize);
-        Chromosome solution = ga.geneticAlgorithm();
-        System.out.println("Best Solution: " + solution);
-    }
+	// Tìm kiếm cá thể tốt nhất trong quần thể hiện tại
+	private Node findBestSolution() {
+		return findBestSolution(population);
+	}
 }
